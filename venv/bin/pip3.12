@@ -1,4 +1,4 @@
-#!/Users/akhileshkumar/Desktop/email-verify-javascript/email-verify/venv/bin/python3.12
+#!/Users/akhileshkumar/Desktop/email-backend/venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys

@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/akhileshkumar/Desktop/email-verify-javascript/email-verify/venv"
+set -gx VIRTUAL_ENV "/Users/akhileshkumar/Desktop/email-backend/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
