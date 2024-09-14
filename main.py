@@ -69,7 +69,7 @@ async def verify_email(email):
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, verify_email_sync, email)
 
-@app.post("/")
+@app.post("/message")
 async def main(file: UploadFile = File(...)):
     try:
         contents = await file.read()
