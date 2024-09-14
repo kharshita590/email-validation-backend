@@ -10,7 +10,8 @@ import os
 app = FastAPI()
 
 origins = [
-    "https://email-validation-fr.vercel.app"
+    # "https://email-validation-fr.vercel.app"
+    "https://email-val.netlify.app"
 ]
 
 app.add_middleware(
