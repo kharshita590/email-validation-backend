@@ -81,13 +81,19 @@ async def main(file: UploadFile = File(...)):
             raise HTTPException(status_code=400, detail="CSV file must contain 'email' column")
 
         emails = df['email'].tolist()
+        batch_size = 6 
+        for i in range(0, len(emails), batch_size):
+            batch = emails[i:i+batch_size]
+            tasks = [verify_email(email) for email in batch]
+            results = await asyncio.gather(*tasks)
+            df['is_valid'] = [result['is_valid'] for result in results]
         
        
-        tasks = [verify_email(email) for email in emails]
-        results = await asyncio.gather(*tasks)
+        # tasks = [verify_email(email) for email in emails]
+        # results = await asyncio.gather(*tasks)
         
       
-        df['is_valid'] = [result['is_valid'] for result in results]
+        # df['is_valid'] = [result['is_valid'] for result in results]
         
         return df.to_dict(orient="records")
     except Exception as e:
@@ -95,6 +101,7 @@ async def main(file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 10000))
     uvicorn.run(app, host="0.0.0.0", port=port)
  
+
