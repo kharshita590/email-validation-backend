@@ -6,6 +6,7 @@ import validators
 import dns.resolver
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
+from fastapi.responses import JSONResponse
 import os
 app = FastAPI()
 
