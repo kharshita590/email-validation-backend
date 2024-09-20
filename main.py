@@ -19,10 +19,10 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins, or specify certain domains
-    allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_origins=origins,           # Allows the frontend origin
+    allow_credentials=True,          # Allows cookies or credentials
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Allowed HTTP methods
+    allow_headers=["Content-Type", "Authorization"],  # Allowed headers
 )
 
 mx_cache = {}
