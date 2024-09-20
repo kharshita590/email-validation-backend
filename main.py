@@ -13,7 +13,7 @@ origins = [
     # "https://email-validation-fr.vercel.app"
     # "https://email-val.netlify.app/"
     # "https://email-validation-90.pages.dev"
-    "http://52.66.255.242/"
+    "http://52.66.255.242"
 ]
 
 app.add_middleware(
@@ -73,6 +73,12 @@ async def verify_email(email):
     return await loop.run_in_executor(None, verify_email_sync, email)
 
 @app.post("/message")
+async def options_message():
+    return JSONResponse(content="OK", headers={
+        "Access-Control-Allow-Origin": "*", 
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+    })
 async def main(file: UploadFile = File(...)):
     try:
         contents = await file.read()
