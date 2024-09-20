@@ -13,7 +13,7 @@ origins = [
     # "https://email-validation-fr.vercel.app"
     # "https://email-val.netlify.app/"
     # "https://email-validation-90.pages.dev"
-    "http://52.66.255.242"
+    "http://52.66.255.242/"
 ]
 
 app.add_middleware(
