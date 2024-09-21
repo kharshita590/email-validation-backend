@@ -74,12 +74,6 @@ async def verify_email(email):
     return await loop.run_in_executor(None, verify_email_sync, email)
 
 @app.post("/message")
-async def options_message():
-    return JSONResponse(content="OK", headers={
-        "Access-Control-Allow-Origin": "*", 
-        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-    })
 async def main(file: UploadFile = File(...)):
     try:
         contents = await file.read()
