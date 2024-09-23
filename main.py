@@ -14,7 +14,7 @@
 #     # "https://email-validation-fr.vercel.app"
 #     # "https://email-val.netlify.app/"
 #     # "https://email-validation-90.pages.dev"
-#     "http://52.66.255.242"
+#     "http://localhost:3000"
 # ]
 
 # app.add_middleware(
