@@ -111,7 +111,9 @@
 #     import uvicorn
 #     port = int(os.environ.get("PORT", 8000))
 #     uvicorn.run(app, host="0.0.0.0", port=port)
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
+import logging
 import pandas as pd
 from io import StringIO
 import smtplib
@@ -132,31 +134,22 @@ origins = [
     # "https://email-validation-90.pages.dev"
     "http://52.66.255.242"
 ]
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,           # Allows the frontend origin
-    allow_credentials=True,          # Allows cookies or credentials
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Allowed HTTP methods
-    allow_headers=["Content-Type", "Authorization"],  # Allowed headers
+    allow_origins=origins,          
+    allow_credentials=True,        
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  
+    allow_headers=["Content-Type", "Authorization"], 
 )
 mx_cache = {}
-# redis = None
-# async def set_up_redis():
-#     global redis 
-#     redis = await aioredis.from_url("redis://localhost")
-# @app.on_event("startup")
-# async def startup_event():
-#     await set_up_redis()
 semaphore = asyncio.Semaphore(10) 
 
 
 async def check_mx_records(domain):
-    # if redis is None:
-    #     raise HTTPException(status_code=500, detail="Redis not initialized")
-    # mx_record = await redis.get(f"mx:{domain}")
-    # if mx_record:
-    #     return mx_record.decode("utf-8") 
+   
     
     if domain in mx_cache:
         return mx_cache[domain]
@@ -165,7 +158,7 @@ async def check_mx_records(domain):
         for record in records:
             mx_host = str(record.exchange)
             mx_cache[domain] = mx_host
-            # await redis.set(f"mx:{domain}", mx_host, expire=60*60*24)
+           
             return mx_host
     except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN, dns.resolver.Timeout, dns.resolver.NoNameservers):
         mx_cache[domain] = None
@@ -204,64 +197,34 @@ async def verify_email_sync(email):
         return {"email": email, "is_valid": False}
 
 executor = ThreadPoolExecutor(max_workers=20)
-# async def verify_email(email):
-#     loop = asyncio.get_event_loop()
-#     return await loop.run_in_executor(executor, verify_email_sync, email)
 async def verify_email(email):
     return await verify_email_sync(email)
 
-# @app.post("/message")
-# async def main(file: UploadFile = File(...)):
-#     try:
-#         contents = await file.read()
-#         df = pd.read_csv(StringIO(contents.decode('utf-8')))
-        
-#         if 'email' not in df.columns:
-#             raise HTTPException(status_code=400, detail="CSV file must contain 'email' column")
-
-#         emails = df['email'].tolist()
-#         batch_size = 6 
-#         results = []
-#         for i in range(0, len(emails), batch_size):
-#             batch = emails[i:i+batch_size]
-#             tasks = [verify_email(email) for email in batch]
-#             results = await asyncio.gather(*tasks)
-#             results.extend(results)
-#             # df['is_valid'] = [result['is_valid'] for result in results]
-            
-#         df[ 'is_valid'] = [result['is_valid'] for result in results]
-
-        
-       
-#         # tasks = [verify_email(email) for email in emails]
-#         # results = await asyncio.gather(*tasks)
-        
-      
-#         # df['is_valid'] = [result['is_valid'] for result in results]
-        
-#         return df.to_dict(orient="records")
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
 @app.post("/message")
 async def main(file: UploadFile = File(...)):
     try:
+        logger.info("received file")
         contents = await file.read()
         df = pd.read_csv(StringIO(contents.decode('utf-8')))
         
+        logger.debug(f"CSV contents: {df.head()}")
         if 'email' not in df.columns:
             raise HTTPException(status_code=400, detail="CSV file must contain 'email' column")
 
         emails = df['email'].tolist()
+        logger.info(f"Validating emails: {emails}")
         batch_size = 6 
         results = []
 
         for i in range(0, len(emails), batch_size):
             batch = emails[i:i + batch_size]
+            logger.info(f"Processing batch: {batch}")
             tasks = [verify_email(email) for email in batch]
             batch_results = await asyncio.gather(*tasks) 
             results.extend(batch_results) 
 
         df['is_valid'] = [result['is_valid'] for result in results]  
+        logger.info("Validation completed successfully")
         
         return df.to_dict(orient="records")
     except Exception as e:
@@ -271,4 +234,5 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+ 
  
