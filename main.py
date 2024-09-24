@@ -145,10 +145,10 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization"], 
 )
 mx_cache = {}
-semaphore = asyncio.Semaphore(10) 
+semaphore = asyncio.Semaphore(30) 
 
 
-async def check_mx_records(domain):
+async def check_mx_records(domain,timeout=5):
    
     
     if domain in mx_cache:
@@ -188,10 +188,10 @@ async def verify_email_sync(email):
 
     try:
         async with SMTP(hostname=mx_host) as server:
-            await server.connect()
+            await asyncio.wait_for(server.connect(), timeout=5)
             await server.helo()
             await server.mail("hk6488808@gmail.com")
-            code, _ = await server.rcpt(email)
+            code, _ = await asyncio.wait_for(server.rcpt(email), timeout=5)
             return {"email": email, "is_valid": code == 250}
     except Exception:
         return {"email": email, "is_valid": False}
@@ -221,7 +221,8 @@ async def main(file: UploadFile = File(...)):
             logger.info(f"Processing batch: {batch}")
             tasks = [verify_email(email) for email in batch]
             batch_results = await asyncio.gather(*tasks) 
-            results.extend(batch_results) 
+            results.extend(batch_results)
+            logger.info(results) 
 
         df['is_valid'] = [result['is_valid'] for result in results]  
         logger.info("Validation completed successfully")
