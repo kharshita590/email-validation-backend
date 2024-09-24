@@ -193,7 +193,7 @@ async def verify_email_sync(email):
        
 
     try:
-        async with SMTP(hostname=mx_host,port=587,timeout=120) as server:
+        async with SMTP(hostname=mx_host,timeout=120) as server:
             await asyncio.wait_for(server.connect(), timeout=120)
             await server.starttls()
             await server.helo()
