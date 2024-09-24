@@ -165,7 +165,10 @@ async def check_mx_records(domain,timeout=10):
         mx_cache[domain] = None
         return None
 
-
+ssl_create = ssl.create_default_context()
+ssl_create.options|=ssl.OP_NO_SSLv3
+ssl_create.options |= ssl.OP_NO_TLSv1
+ssl_create.options |= ssl.OP_NO_TLSv1_1
 
 async def verify_email_sync(email):
     check_validate = validators.email(email)
@@ -193,9 +196,9 @@ async def verify_email_sync(email):
        
 
     try:
-        async with SMTP(hostname=mx_host,timeout=120) as server:
+        async with SMTP(hostname=mx_host,port=465,tls_context=ssl_create,timeout=120) as server:
             await asyncio.wait_for(server.connect(), timeout=120)
-            # await server.starttls()
+            await server.starttls()
             await server.helo()
             await server.mail("hk6488808@gmail.com")
             code, _ = await asyncio.wait_for(server.rcpt(email), timeout=120)
