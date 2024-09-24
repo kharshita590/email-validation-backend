@@ -195,7 +195,7 @@ async def verify_email_sync(email):
     try:
         async with SMTP(hostname=mx_host,timeout=120) as server:
             await asyncio.wait_for(server.connect(), timeout=120)
-            await server.starttls()
+            # await server.starttls()
             await server.helo()
             await server.mail("hk6488808@gmail.com")
             code, _ = await asyncio.wait_for(server.rcpt(email), timeout=120)
