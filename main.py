@@ -197,7 +197,7 @@ async def verify_email_sync(email):
             code, _ = await asyncio.wait_for(server.rcpt(email), timeout=5)
             logger.debug(f"SMTP RCPT code: {code} for {email}")
             return {"email": email, "is_valid": code == 250}
-    except Exception:
+    except Exception as e:
         logger.error(f"SMTP verification failed for {email}, error: {str(e)}")
         return {"email": email, "is_valid": False}
 
