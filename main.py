@@ -167,6 +167,7 @@ async def check_mx_records(domain,timeout=10):
 async def verify_email_sync(email):
     check_validate = validators.email(email)
     if not check_validate:
+        logger.debug(f"Email validation failed: {email}")
         return {"email": email, "is_valid": False}
 
     domain_split = email.split('@')[-1]
@@ -184,7 +185,9 @@ async def verify_email_sync(email):
     
     mx_host = await check_mx_records(domain_split)
     if not mx_host:
+        logger.debug(f"MX host not found for {email}")
         return {"email": email, "is_valid": False}
+       
 
     try:
         async with SMTP(hostname=mx_host) as server:
@@ -192,8 +195,10 @@ async def verify_email_sync(email):
             await server.helo()
             await server.mail("hk6488808@gmail.com")
             code, _ = await asyncio.wait_for(server.rcpt(email), timeout=5)
+            logger.debug(f"SMTP RCPT code: {code} for {email}")
             return {"email": email, "is_valid": code == 250}
     except Exception:
+        logger.error(f"SMTP verification failed for {email}, error: {str(e)}")
         return {"email": email, "is_valid": False}
 
 executor = ThreadPoolExecutor(max_workers=20)
