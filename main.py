@@ -125,6 +125,7 @@ from fastapi.responses import JSONResponse
 import os
 import redis.asyncio as aioredis
 from aiosmtplib import SMTP
+import ssl
 from concurrent.futures import ThreadPoolExecutor
 app = FastAPI()
 
@@ -164,6 +165,11 @@ async def check_mx_records(domain,timeout=10):
         mx_cache[domain] = None
         return None
 
+ssl_create = ssl.create_default_context()
+ssl_create.options|=ssl.OP_NO_SSLv3
+ssl_create.options |= ssl.OP_NO_TLSv1
+ssl_create.options |= ssl.OP_NO_TLSv1_1
+
 async def verify_email_sync(email):
     check_validate = validators.email(email)
     if not check_validate:
@@ -190,7 +196,7 @@ async def verify_email_sync(email):
        
 
     try:
-        async with SMTP(hostname=mx_host,port=587) as server:
+        async with SMTP(hostname=mx_host,port=587,tls_context=ssl_create,timeout=60) as server:
             await asyncio.wait_for(server.connect(), timeout=60)
             await server.starttls()
             await server.helo()
