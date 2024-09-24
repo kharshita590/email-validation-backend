@@ -225,7 +225,7 @@ async def main(file: UploadFile = File(...)):
 
         emails = df['email'].tolist()
         logger.info(f"Validating emails: {emails}")
-        batch_size = 5
+        batch_size = 70
         results = []
 
         for i in range(0, len(emails), batch_size):
