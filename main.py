@@ -146,7 +146,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization"], 
 )
 mx_cache = {}
-semaphore = asyncio.Semaphore(50) 
+semaphore = asyncio.Semaphore(20) 
 
 
 async def check_mx_records(domain,timeout=10):
@@ -196,12 +196,12 @@ async def verify_email_sync(email):
        
 
     try:
-        async with SMTP(hostname=mx_host,port=587,tls_context=ssl_create,timeout=60) as server:
-            await asyncio.wait_for(server.connect(), timeout=60)
+        async with SMTP(hostname=mx_host,port=587,tls_context=ssl_create,timeout=120) as server:
+            await asyncio.wait_for(server.connect(), timeout=120)
             await server.starttls()
             await server.helo()
             await server.mail("hk6488808@gmail.com")
-            code, _ = await asyncio.wait_for(server.rcpt(email), timeout=60)
+            code, _ = await asyncio.wait_for(server.rcpt(email), timeout=120)
             logger.debug(f"SMTP RCPT code: {code} for {email}")
             return {"email": email, "is_valid": code == 250}
     except Exception as e:
