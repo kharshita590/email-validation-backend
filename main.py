@@ -242,7 +242,9 @@ async def main(file: UploadFile = File(...)):
             tasks = [verify_email(email) for email in batch]
             batch_results = await asyncio.gather(*tasks) 
             results.extend(batch_results)
+            await asyncio.sleep(2)
             logger.info(results) 
+
 
         df['is_valid'] = [result['is_valid'] for result in results]  
         logger.info("Validation completed successfully")
