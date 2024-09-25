@@ -204,12 +204,12 @@ async def verify_email_sync(email):
        
 
     try:
-        async with SMTP(hostname=mx_host,port=465,tls_context=ssl_context,timeout=620,use_tls=True) as server:
-            # await asyncio.wait_for(server.connect(), timeout=120)
+        async with SMTP(hostname=mx_host,port=465,tls_context=ssl_context,timeout=40,use_tls=True) as server:
+            await asyncio.wait_for(server.connect(), timeout=40)
             # await server.helo()
-            await server.connect()
+            # await server.connect()
             await server.mail("hk6488808@gmail.com")
-            code, _ = await asyncio.wait_for(server.rcpt(email), timeout=620)
+            code, _ = await asyncio.wait_for(server.rcpt(email), timeout=40)
             logger.debug(f"SMTP RCPT code: {code} for {email}")
             return {"email": email, "is_valid": code == 250}
     except Exception as e:
