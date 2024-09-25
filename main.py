@@ -172,6 +172,8 @@ async def check_mx_records(domain,timeout=10):
         return None
 
 ssl_create = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
 ssl_create.options|=ssl.OP_NO_SSLv3
 ssl_create.options |= ssl.OP_NO_TLSv1
 ssl_create.options |= ssl.OP_NO_TLSv1_1
