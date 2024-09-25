@@ -155,7 +155,7 @@ mx_cache = {}
 semaphore = asyncio.Semaphore(50) 
 
 
-async def check_mx_records(domain,timeout=10):
+async def check_mx_records(domain):
    
     
     if domain in mx_cache:
@@ -174,9 +174,6 @@ async def check_mx_records(domain,timeout=10):
 ssl_create = ssl.create_default_context()
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
-ssl_create.options|=ssl.OP_NO_SSLv3
-ssl_create.options |= ssl.OP_NO_TLSv1
-ssl_create.options |= ssl.OP_NO_TLSv1_1
 
 async def verify_email_sync(email):
     check_validate = validators.email(email)
@@ -209,7 +206,7 @@ async def verify_email_sync(email):
             await server.starttls(ssl_context=ssl_context)
             # await server.helo()
             # await server.connect()
-            await server.mail("hk1149454@gmail.com")
+            await server.mail("n640o@rustyload.com")
             code, _ = await asyncio.wait_for(server.rcpt(email), timeout=40)
             logger.debug(f"SMTP RCPT code: {code} for {email}")
             return {"email": email, "is_valid": code == 250}
