@@ -172,9 +172,9 @@ async def check_mx_records(domain,timeout=10):
         return None
 
 ssl_create = ssl.create_default_context()
-# ssl_create.options|=ssl.OP_NO_SSLv3
-# ssl_create.options |= ssl.OP_NO_TLSv1
-# ssl_create.options |= ssl.OP_NO_TLSv1_1
+ssl_create.options|=ssl.OP_NO_SSLv3
+ssl_create.options |= ssl.OP_NO_TLSv1
+ssl_create.options |= ssl.OP_NO_TLSv1_1
 
 async def verify_email_sync(email):
     check_validate = validators.email(email)
@@ -202,13 +202,10 @@ async def verify_email_sync(email):
        
 
     try:
-        async with SMTP(hostname=mx_host,port=587,tls_context=ssl_context,timeout=120,use_tls=True) as server:
-            # await asyncio.wait_for(server.connect(), timeout=120)
-            # await server.starttls()
-            await server.connect()
-            await server.ehlo()  
-            await server.starttls(context=ssl_context)  
-            await server.ehlo()  
+        async with SMTP(hostname=mx_host,port=465,tls_context=ssl_context,timeout=120,use_tls=True) as server:
+            await asyncio.wait_for(server.connect(), timeout=120)
+            await server.starttls()
+            await server.helo()
             await server.mail("hk6488808@gmail.com")
             code, _ = await asyncio.wait_for(server.rcpt(email), timeout=120)
             logger.debug(f"SMTP RCPT code: {code} for {email}")
