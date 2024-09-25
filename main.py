@@ -152,7 +152,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization"], 
 )
 mx_cache = {}
-semaphore = asyncio.Semaphore(20) 
+semaphore = asyncio.Semaphore(50) 
 
 
 async def check_mx_records(domain,timeout=10):
