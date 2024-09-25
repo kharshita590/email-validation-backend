@@ -242,7 +242,7 @@ async def main(file: UploadFile = File(...)):
             tasks = [verify_email(email) for email in batch]
             batch_results = await asyncio.gather(*tasks) 
             results.extend(batch_results)
-            await asyncio.sleep(2)
+            await asyncio.sleep(1)
             logger.info(results) 
 
 
