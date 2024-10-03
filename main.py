@@ -201,7 +201,7 @@ async def verify_email_sync(email):
        
 
     try:
-        async with SMTP(hostname=mx_host,port=2587,tls_context=ssl_context,timeout=40,use_tls=True) as server:
+        async with SMTP(hostname=mx_host,port=465,tls_context=ssl_context,timeout=40,use_tls=True) as server:
             await asyncio.wait_for(server.connect(), timeout=40)
             # await server.starttls(ssl_context=ssl_context)
             # await server.helo()
