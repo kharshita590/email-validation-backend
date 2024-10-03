@@ -206,7 +206,7 @@ async def verify_email_sync(email):
             # await server.starttls(ssl_context=ssl_context)
             # await server.helo()
             # await server.connect()
-            await server.mail("n640o@rustyload.com")
+            await server.mail("hk264603@gmail.com")
             code, _ = await asyncio.wait_for(server.rcpt(email), timeout=40)
             logger.debug(f"SMTP RCPT code: {code} for {email}")
             return {"email": email, "is_valid": code == 250}
